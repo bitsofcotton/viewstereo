@@ -5,8 +5,8 @@ Tiny simple viewer for pre-transformed graphics on iOS.
 * Install Xcode.
 * Preferences->Accounts, add iCloud accounts, ManageCertificates, add iOS Development.
 * Create Xcode project and close.
-* sudo gem install cocoapods (with cocoapods, so we must agree LICENSES before to use.)
-* Edit Podfile (Thanks to marmelroy libraries, so we must agree LICENSES before to use (includes zlib)) as:
+* sudo gem install cocoapods (with cocoapods, so we must agree licenses before to use.)
+* Edit Podfile (Thanks to marmelroy libraries, so we must agree licenses before to use (includes zlib)) as:
 * * pod 'FileBrowser', git: 'https://github.com/marmelroy/FileBrowser', branch: 'master', submodules: true
 * * pod 'Zip', git: 'https://github.com/marmelroy/Zip', branch: ‘master’, submodules: true
 * Open xcworkspace, edit main swift file as this repository.
