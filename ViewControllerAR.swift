@@ -19,20 +19,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     
     private func changeImage() {
-        if(documentList.count > 0) {
-            if(NSString(string: documentList[documentIdx]).pathExtension == "scn") {
-                print("called")
-                do {
-                    try sceneView.scene = SCNScene(url: URL(fileURLWithPath: documentsDirectory.path + "/" + documentList[documentIdx]))
-                    sceneView.autoenablesDefaultLighting = true
-                } catch {
-                    print("error")
-                }
-            } else {
-                print("non scn")
+        if(documentList.count > 0 && documentIdx < documentList.count) {
+            do {
+                try sceneView.scene = SCNScene(url: URL(fileURLWithPath: documentsDirectory.path + "/" + documentList[documentIdx]))
+                sceneView.autoenablesDefaultLighting = true
+            } catch {
+                
             }
             documentIdx += 1
-            documentIdx %= documentList.count
         } else {
             loadsObjs()
         }
@@ -56,8 +50,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 try Zip.unzipFile(file.filePath, destination: cself.documentsDirectory, overwrite: true, password: "", progress: { (progress) -> () in
                     
                 })
-                cself.documentList = try manager.contentsOfDirectory(atPath: cself.documentsDirectory.path)
+                cself.documentList = []
                 cself.documentIdx = 0
+                let rawarray = try manager.contentsOfDirectory(atPath: cself.documentsDirectory.path)
+                for raw in rawarray {
+                    if(NSString(string: raw).pathExtension == "scn" ||
+                        NSString(string: raw).pathExtension == "scnz") {
+                        cself.documentList.insert(raw, at: cself.documentList.count)
+                    }
+                }
             } catch {
                 let alert: UIAlertController = UIAlertController(title: "Some error.", message: "Some error while reading file.", preferredStyle:  UIAlertControllerStyle.alert)
                 let defaultAction: UIAlertAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
@@ -77,7 +78,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.showsStatistics = true
         
         // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        let scene = SCNScene()
         
         // Set the scene to the view
         sceneView.scene = scene
