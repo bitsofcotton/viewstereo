@@ -15,7 +15,7 @@ import Zip
 class ViewController: UIViewController, ARSCNViewDelegate {
     let documentsDirectory = FileManager.default.temporaryDirectory
     var documentList : [String] = []
-    var documentIdx : Int = 0
+    var documentIdx  : Int = 0
     @IBOutlet var sceneView: ARSCNView!
     
     private func changeImage() {
@@ -70,17 +70,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Set the view's delegate
         sceneView.delegate = self
-        
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
-        // Create a new scene
         let scene = SCNScene()
-        
-        // Set the scene to the view
         sceneView.scene = scene
         sceneView.autoenablesDefaultLighting = true
         sceneView.addGestureRecognizer(UITapGestureRecognizer(
@@ -89,19 +83,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
-        // Horizontal plane detection.
         configuration.planeDetection = .horizontal
-        // Run the view's session
         sceneView.session.run(configuration)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        // Pause the view's session
         sceneView.session.pause()
     }
     
@@ -120,15 +108,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @objc func tapView(sender: UITapGestureRecognizer) {
         changeImage()
-        return
-    }
-    
-    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
-        if (motion == .motionShake || motion == .remoteControlNextTrack) {
-            if(self.documentList.count <= 0) {
-                self.changeImage()
-            }
-        }
         return
     }
     
