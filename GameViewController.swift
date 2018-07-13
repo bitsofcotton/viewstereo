@@ -60,6 +60,20 @@ class GameViewController: UIViewController {
             sceneR.rootNode.addChildNode(ambientLightNodeR)
             scnL.scene = sceneL
             scnR.scene = sceneR
+            let spinL = CABasicAnimation(keyPath: "rotation")
+            spinL.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: -Float.pi / 6.0))
+            spinL.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: Float.pi / 6.0))
+            spinL.duration = 3
+            spinL.autoreverses = true
+            spinL.repeatCount = .infinity
+            scnL.scene?.rootNode.addAnimation(spinL, forKey: "spin around")
+            let spinR = CABasicAnimation(keyPath: "rotation")
+            spinR.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: -Float.pi / 6.0))
+            spinR.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: Float.pi / 6.0))
+            spinR.duration = 3
+            spinR.autoreverses = true
+            spinR.repeatCount = .infinity
+            scnR.scene?.rootNode.addAnimation(spinR, forKey: "spin around")
             UIApplication.shared.isIdleTimerDisabled = true
         } catch {
             return
@@ -121,22 +135,22 @@ class GameViewController: UIViewController {
             manager.deviceMotionUpdateInterval = motionUpdateInterval
             let cself = self
             manager.startDeviceMotionUpdates(to: OperationQueue.current!, withHandler: { (data, error) in
-                    if (pow((data?.userAcceleration.x)!, 2.0) + pow((data?.userAcceleration.y)!, 2.0) + pow((data?.userAcceleration.y)!, 2.0) > pow(Double(0.7), 2.0)) {
-                        if cself.knocked == false {
-                            cself.knocked = true
-                        } else {
-                            cself.knocked = false
-                            cself.knockReset = 2.0
-                            cself.documentIdx += 1
-                            cself.changeImage()
-                        }
-                    }
-                    if (cself.knocked) && (cself.knockReset >= 0.0) {
-                        cself.knockReset = cself.knockReset - cself.motionUpdateInterval
-                    } else if cself.knocked == true {
+                if (pow((data?.userAcceleration.x)!, 2.0) + pow((data?.userAcceleration.y)!, 2.0) + pow((data?.userAcceleration.y)!, 2.0) > pow(Double(0.7), 2.0)) {
+                    if cself.knocked == false {
+                        cself.knocked = true
+                    } else {
                         cself.knocked = false
                         cself.knockReset = 2.0
+                        cself.documentIdx += 1
+                        cself.changeImage()
                     }
+                }
+                if (cself.knocked) && (cself.knockReset >= 0.0) {
+                    cself.knockReset = cself.knockReset - cself.motionUpdateInterval
+                } else if cself.knocked == true {
+                    cself.knocked = false
+                    cself.knockReset = 2.0
+                }
             })
         }
     }
