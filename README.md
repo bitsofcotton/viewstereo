@@ -4,7 +4,7 @@ Tiny simple viewer for pre-transformed graphics on iOS.
 # Instructions.
 * Install Xcode.
 * Preferences->Accounts, add iCloud accounts, ManageCertificates, add iOS Development.
-* Create Xcode project (for AR, AR project) and close.
+* Create Xcode project (for AR, AR project) (for VR, game with scenekit) and close.
 * sudo gem install cocoapods (with cocoapods, so we must agree licenses before to use.)
 * run pod init
 * Edit Podfile (Thanks to marmelroy libraries, so we must agree licenses before to use (includes zlib)) as:
