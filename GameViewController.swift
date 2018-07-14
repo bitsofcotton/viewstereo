@@ -45,8 +45,12 @@ class GameViewController: UIViewController {
             return
         }
         do {
+            let screenWidth:CGFloat = self.view.frame.width
+            let screenHeight:CGFloat = self.view.frame.height
+            scnL.frame = CGRect(x: CGFloat(-screenWidth / 2 * 0.4), y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight)
+            scnR.frame = CGRect(x: screenWidth / 2, y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight)
+
             let sceneL = try SCNScene(url: URL(fileURLWithPath: self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]))
-            print((self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]).replace(target: "L.scn", withString: "R.scn"))
             let sceneR = try SCNScene(url: URL(fileURLWithPath: (self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]).replace(target: "L.scn", withString: "R.scn")))
             let ambientLightNodeL = SCNNode()
             let ambientLightNodeR = SCNNode()
@@ -66,13 +70,13 @@ class GameViewController: UIViewController {
             spinL.duration = 3
             spinL.autoreverses = true
             spinL.repeatCount = .infinity
-            scnL.scene?.rootNode.addAnimation(spinL, forKey: "spin around")
             let spinR = CABasicAnimation(keyPath: "rotation")
             spinR.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: -Float.pi / 6.0))
             spinR.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: Float.pi / 6.0))
             spinR.duration = 3
             spinR.autoreverses = true
             spinR.repeatCount = .infinity
+            scnL.scene?.rootNode.addAnimation(spinL, forKey: "spin around")
             scnR.scene?.rootNode.addAnimation(spinR, forKey: "spin around")
             UIApplication.shared.isIdleTimerDisabled = true
         } catch {
@@ -113,6 +117,7 @@ class GameViewController: UIViewController {
                 alert.addAction(defaultAction)
                 cself.present(alert, animated: true, completion: nil)
             }
+            cself.documentList.sort()
             cself.changeImage()
         }
     }
