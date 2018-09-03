@@ -33,8 +33,7 @@ class GameViewController: UIViewController {
     let motionUpdateInterval : Double = 0.05
     var knockReset : Double = 2.0
     
-    var scnL = SCNView()
-    var scnR = SCNView()
+    var scn = SCNView()
     
     private func changeImage() {
         if(self.documentIdx < 0) {
@@ -47,20 +46,21 @@ class GameViewController: UIViewController {
         do {
             let screenWidth:CGFloat = self.view.frame.width
             let screenHeight:CGFloat = self.view.frame.height
-            scnL.frame = CGRect(x: CGFloat(-screenWidth / 2 * 0.4), y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight)
-            scnR.frame = CGRect(x: screenWidth / 2, y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight)
-            scnL.scene = try SCNScene(url: URL(fileURLWithPath: self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]))
-            scnR.scene = try SCNScene(url: URL(fileURLWithPath: (self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]).replace(target: "L.scn", withString: "R.scn")))
-            let ambientLightNodeL = SCNNode()
-            let ambientLightNodeR = SCNNode()
-            ambientLightNodeL.light = SCNLight()
-            ambientLightNodeR.light = SCNLight()
-            ambientLightNodeL.light!.type = .ambient
-            ambientLightNodeR.light!.type = .ambient
-            ambientLightNodeL.light!.color = UIColor.white
-            ambientLightNodeR.light!.color = UIColor.white
-            scnL.scene?.rootNode.addChildNode(ambientLightNodeL)
-            scnR.scene?.rootNode.addChildNode(ambientLightNodeR)
+            scn.frame = CGRect(x: 0, y: 0, width: CGFloat(screenWidth), height: screenHeight)
+            let scene = try SCNScene(url: URL(fileURLWithPath: self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]))
+            let ambientLightNode = SCNNode()
+            ambientLightNode.light = SCNLight()
+            ambientLightNode.light!.type = .ambient
+            ambientLightNode.light!.color = UIColor.white
+            scene.rootNode.addChildNode(ambientLightNode)
+            scn.scene = scene
+            let spin = CABasicAnimation(keyPath: "rotation")
+            spin.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: -Float.pi / 8.0))
+            spin.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: Float.pi / 8.0))
+            spin.duration = 3
+            spin.autoreverses = true
+            spin.repeatCount = .infinity
+            scn.scene?.rootNode.addAnimation(spin, forKey: "spin around")
             UIApplication.shared.isIdleTimerDisabled = true
         } catch {
             return
@@ -109,14 +109,12 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         let screenWidth:CGFloat = self.view.frame.width
         let screenHeight:CGFloat = self.view.frame.height
-        scnL = SCNView(frame: CGRect(x: CGFloat(-screenWidth / 2 * 0.4), y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight))
-        scnR = SCNView(frame: CGRect(x: screenWidth / 2, y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight))
-        self.view.addSubview(scnL)
-        self.view.addSubview(scnR)
-        scnL.addGestureRecognizer(UITapGestureRecognizer(
-            target: self, action: #selector(self.tapLeft(sender:))))
-        scnR.addGestureRecognizer(UITapGestureRecognizer(
-            target: self, action: #selector(self.tapRight(sender:))))
+        scn.frame = CGRect(x: 0, y: 0, width: CGFloat(screenWidth), height: screenHeight)
+
+        scn = SCNView(frame: CGRect(x: 0, y: 0, width: CGFloat(screenWidth), height: screenHeight))
+        self.view.addSubview(scn)
+        scn.addGestureRecognizer(UITapGestureRecognizer(
+            target: self, action: #selector(self.tap(sender:))))
         // Thanks to :
         // https://stackoverflow.com/questions/30619778/swift-coremotion-detect-tap-or-knock-on-device-while-in-background
         if manager.isDeviceMotionAvailable {
@@ -143,15 +141,21 @@ class GameViewController: UIViewController {
         }
     }
     
-    @objc func tapLeft(sender: UITapGestureRecognizer) {
-        documentIdx -= 1
-        changeImage()
-        return
-    }
-    
-    @objc func tapRight(sender: UITapGestureRecognizer) {
-        documentIdx += 1
-        changeImage()
+    @objc func tap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            if(self.documentList.count <= 0) {
+                self.loadsImages()
+            } else {
+                let screenWidth:CGFloat = self.view.frame.width
+                let loc = sender.location(in: self.view)
+                if(loc.x < screenWidth / 2) {
+                    self.documentIdx -= 1
+                } else {
+                    self.documentIdx += 1
+                }
+                self.changeImage()
+            }
+        }
         return
     }
     

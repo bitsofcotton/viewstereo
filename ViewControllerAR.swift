@@ -22,9 +22,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if(documentList.count > 0 && documentIdx < documentList.count) {
             do {
                 try sceneView.scene = SCNScene(url: URL(fileURLWithPath: documentsDirectory.path + "/" + documentList[documentIdx]))
+                let ambientLightNode = SCNNode()
+                ambientLightNode.light = SCNLight()
+                ambientLightNode.light!.type = .ambient
+                ambientLightNode.light!.color = UIColor.white
+                sceneView.scene.rootNode.addChildNode(ambientLightNode)
                 sceneView.autoenablesDefaultLighting = true
             } catch {
-                
+                return
             }
             documentIdx += 1
         } else {
@@ -39,13 +44,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         fileBrowser.didSelectFile = { (file: FBFile) -> Void in
             do {
                 let manager = FileManager()
-                do {
-                    let list = try manager.contentsOfDirectory(atPath: cself.documentsDirectory.path)
-                    for path in list {
-                        try manager.removeItem(atPath: cself.documentsDirectory.path + "/" + path)
-                    }
-                } catch {
-                    
+                let list = try manager.contentsOfDirectory(atPath: cself.documentsDirectory.path)
+                for path in list {
+                    try! manager.removeItem(atPath: cself.documentsDirectory.path + "/" + path)
                 }
                 try Zip.unzipFile(file.filePath, destination: cself.documentsDirectory, overwrite: true, password: "", progress: { (progress) -> () in
                     
