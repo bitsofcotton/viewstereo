@@ -47,8 +47,8 @@ class GameViewController: UIViewController {
         do {
             let screenWidth:CGFloat = self.view.frame.width
             let screenHeight:CGFloat = self.view.frame.height
-            scnL.frame = CGRect(x: CGFloat(-screenWidth / 2 * 0.4), y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight)
-            scnR.frame = CGRect(x: screenWidth / 2, y: 0, width: CGFloat(screenWidth / 2 * 1.4), height: screenHeight)
+            scnL.frame = CGRect(x: 0, y: 0, width: screenWidth / 2, height: screenHeight)
+            scnR.frame = CGRect(x: screenWidth / 2, y: 0, width: screenWidth / 2, height: screenHeight)
             scnL.scene = try SCNScene(url: URL(fileURLWithPath: self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]))
             scnR.scene = try SCNScene(url: URL(fileURLWithPath: (self.documentsDirectory.path + "/" + self.documentList[self.documentIdx]).replace(target: "L.scn", withString: "R.scn")))
             let ambientLightNodeL = SCNNode()
@@ -61,6 +61,20 @@ class GameViewController: UIViewController {
             ambientLightNodeR.light!.color = UIColor.white
             scnL.scene?.rootNode.addChildNode(ambientLightNodeL)
             scnR.scene?.rootNode.addChildNode(ambientLightNodeR)
+            let spinL = CABasicAnimation(keyPath: "rotation")
+            let spinR = CABasicAnimation(keyPath: "rotation")
+            spinL.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: 0))
+            spinR.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: 0))
+            spinL.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w:  Float.pi / 32.0))
+            spinR.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: -Float.pi / 32.0))
+            spinL.duration = 3
+            spinR.duration = 3
+            spinL.autoreverses = true
+            spinR.autoreverses = true
+            spinL.repeatCount = .infinity
+            spinR.repeatCount = .infinity
+            scnL.scene?.rootNode.addAnimation(spinL, forKey: "spin around")
+            scnR.scene?.rootNode.addAnimation(spinR, forKey: "spin around")
             UIApplication.shared.isIdleTimerDisabled = true
         } catch {
             return
