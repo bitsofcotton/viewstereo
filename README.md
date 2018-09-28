@@ -1,7 +1,7 @@
 # ViewStereo
-Tiny simple viewer for pre-transformed graphics on iOS.
+Tiny simple viewer for pre-transformed graphics on iOS and macOS.
 
-# Instructions.
+# Instructions for iOS.
 * Install Xcode.
 * Preferences->Accounts, add iCloud accounts, ManageCertificates, add iOS Development.
 * Create Xcode project (for AR, AR project) (for VR, game with scenekit) and close.
@@ -16,3 +16,9 @@ Tiny simple viewer for pre-transformed graphics on iOS.
 * Edit with Manage Schemes with Pods-... checked.
 * Build
 * Run with transferred files.
+
+# Instructions for macOS.
+* Install Xcode.
+* Create Xcode project with scenekit.
+* Edit main swift file as this repository.
+* Run
