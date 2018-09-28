@@ -1,5 +1,5 @@
 # ViewStereo
-Tiny simple viewer for pre-transformed graphics on iOS and macOS.
+Tiny simple viewer skeletons for pre-transformed graphics on iOS and macOS.
 
 # Instructions for iOS.
 * Install Xcode.
