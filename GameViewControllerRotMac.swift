@@ -9,6 +9,7 @@
 import SceneKit
 import QuartzCore
 
+// thanks to: https://stackoverflow.com/questions/24200888/any-way-to-replace-characters-on-swift-string
 extension String
 {
     func replace(target: String, withString: String) -> String
