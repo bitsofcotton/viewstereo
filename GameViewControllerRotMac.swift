@@ -29,7 +29,11 @@ class GameViewController: NSViewController {
         if(self.documentIdx < 0) {
             self.documentIdx = 0
         }
-        if(self.documentList.count <= 0 || self.documentList.count <= self.documentIdx) {
+        if(self.documentList.count <= 0) {
+            return
+        }
+        if(self.documentList.count <= self.documentIdx) {
+            self.documentIdx = self.documentList.count - 1
             loadsImages()
             return
         }
@@ -37,19 +41,27 @@ class GameViewController: NSViewController {
         let screenHeight:CGFloat = self.view.frame.height
         scn.frame = CGRect(x: 0, y: 0, width: CGFloat(screenWidth), height: screenHeight)
         scn.scene = self.documentList[self.documentIdx]
-        let spin = CABasicAnimation(keyPath: "rotation")
+        // thanks to : https://stackoverflow.com/questions/10938223/how-can-i-create-an-cabasicanimation-for-multiple-properties
+        let groupAnimation = CAAnimationGroup()
+        groupAnimation.duration = 3
+        let spin = CABasicAnimation(keyPath: "transform.rotation")
         spin.fromValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: CGFloat(-Float.pi / 8.0)))
-        spin.toValue = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: CGFloat(Float.pi / 8.0)))
-        spin.duration = 3
-        spin.autoreverses = true
-        spin.repeatCount = .infinity
-        scn.scene?.rootNode.addAnimation(spin, forKey: "spin around")
+        spin.toValue   = NSValue(scnVector4: SCNVector4(x: 0, y: 1, z: 0, w: CGFloat( Float.pi / 8.0)))
+        spin.duration  = 3
+        let trans = CABasicAnimation(keyPath: "translation.x")
+        trans.fromValue = sin(CGFloat(-Float.pi / 8.0))
+        trans.toValue   = sin(CGFloat( Float.pi / 8.0))
+        trans.duration  = 3
+        groupAnimation.animations   = [spin, trans]
+        groupAnimation.duration     = 3
+        groupAnimation.autoreverses = true
+        groupAnimation.repeatCount  = .infinity
+        scn.scene?.rootNode.addAnimation(groupAnimation, forKey: "spin around")
         isload = true
         return
     }
     
     private func loadsImages() {
-        self.documentList = []
         let openPanel = NSOpenPanel()
         openPanel.allowsMultipleSelection = true
         openPanel.canChooseDirectories = false
@@ -59,15 +71,17 @@ class GameViewController: NSViewController {
         openPanel.allowedFileTypes = ["scn"]
         let i = openPanel.runModal()
         if(i == NSApplication.ModalResponse.OK) {
+            self.documentList = []
             do {
                 try openPanel.urls.forEach({ (url) in
                     self.documentList.append(try SCNScene(url: url))
                 })
             } catch {
+                return
             }
+            self.documentIdx = 0;
+            self.changeImage()
         }
-        self.documentIdx = 0;
-        self.changeImage()
     }
     
     override func viewDidLoad() {
