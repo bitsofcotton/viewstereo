@@ -17,6 +17,11 @@ Tiny simple viewer skeletons for pre-transformed graphics on iOS and macOS.
 * Build
 * Run with transferred files.
 
+# Instructions for CameraViewController
+* Download AVCamSample code from apple's developer website.
+* Touch CameraViewController.swift as this repository.
+* Build and run with i-devices.
+
 # Instructions for macOS.
 * Install Xcode.
 * Create Xcode project with scenekit.
